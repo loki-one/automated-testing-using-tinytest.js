@@ -1,25 +1,67 @@
 <script src="tinytest.js"></script>
 <script>
 
+function reduce(array, callback, initialValue){
+  var startingIndex = 0;
+  var resultSoFar = initialValue;
+
+  //Detects if no initialValue
+  if(arguments.length < 3){
+    resultSoFar = array[startingIndex]; //resultSoFar = array[0]
+    startingIndex++;
+  }
+
+  for(var i=startingIndex; i<array.length; i++){
+    callback(resultSoFar, array[i], i);
+  }
+}
+
 tests({
+  'If initialValue, callback should run array.length times.': function(){
+    var numberOfTimesCallbackHasRun = 0;
+    reduce([1], function(previousValue){
+      numberOfTimesCallbackHasRun++;
+    }, 0);
+    eq(numberOfTimesCallbackHasRun, 1);
+  },
+  'If no initialValue, callback should run array.length-1 times.': function(){
+    var numberOfTimesCallbackHasRun = 0;
+    reduce([1], function(previousValue){
+      numberOfTimesCallbackHasRun++;
+    });
+    eq(numberOfTimesCallbackHasRun, 0);
+  },
+
   'If initialValue, previousValue should start with initialValue.': function() {
-    fail();
+    reduce([1], function(previousValue){
+      eq(previousValue, 0);
+    }, 0);
   },
   'If initialValue, currentValue should start with array[0].': function() {
-    fail();
+    reduce([1], function(previousValue, currentValue){
+      eq(currentValue, 1);
+    }, 0);
   },
   'If initialValue, callback will start at index 0.': function() {
-    fail();
+    reduce([1], function(previousValue, currentValue, currentIndex){
+      eq(currentIndex, 0);
+    }, 0);
   },
 
   'If no initialValue, previousValue should start with array[0].': function() {
-    fail();
+    reduce([1,2], function(previousValue){
+      eq(previousValue, 1);
+    });
   },
   'If no initialValue, currentValue should start with array[1].': function() {
-    fail();
+    reduce([1,2], function(previousValue, currentValue){
+      eq(currentValue, 2);
+    });
   },
   'If no initialValue, callback will start at index 1.': function() {
-    fail();
+    reduce([1,2], function(previousValue, currentValue, currentIndex){
+      eq(currentIndex, 1);
+    });
   },
 
   'If initialValue, and array is empty, return initialValue without calling callback': function() {
