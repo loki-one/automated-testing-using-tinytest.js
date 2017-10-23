@@ -1,7 +1,10 @@
 <script src="tinytest.js"></script>
 <script>
 
+// Note: Object.key([,,,,]).length  === 0 or Object.key([]).length  === 0
+
 function reduce(array, callback, initialValue){
+
   var startingIndex = 0;
   var resultSoFar = initialValue;
 
@@ -9,6 +12,17 @@ function reduce(array, callback, initialValue){
   if(arguments.length < 3){
     resultSoFar = array[startingIndex]; //resultSoFar = array[0]
     startingIndex++;
+    //check array has one element just return that element
+    if(Object.keys(array).length === 1){
+      var singleIndex = Object.keys(array)[0];
+      var singleElement = array[singleIndex];
+      return singleElement;
+    }
+  } /*has initialValue */ else{
+    //check if array is empty
+    if(Object.keys(array).length === 0){
+      return initialValue;
+    }
   }
 
   for(var i=startingIndex; i<array.length; i++){
@@ -65,10 +79,21 @@ tests({
   },
 
   'If initialValue, and array is empty, return initialValue without calling callback': function() {
-    fail();
+    var numberOfTimesCallbackHasRun = 0;
+    var initialValue = 0;
+    var reduceResult = reduce([,,], function(){
+      numberOfTimesCallbackHasRun++;
+    }, initialValue);
+    eq(reduceResult, initialValue);
+    eq(numberOfTimesCallbackHasRun, 0);
   },
   'If no initialValue, and array has one element, it should return that element without calling callback': function() {
-    fail();
+    var numberOfTimesCallbackHasRun = 0;
+    var reduceResult = reduce([1], function(){
+      numberOfTimesCallbackHasRun++;
+    });
+    eq(reduceResult, 1);
+    eq(numberOfTimesCallbackHasRun, 0);
   },
 
   'If should actually reduce.': function() {
