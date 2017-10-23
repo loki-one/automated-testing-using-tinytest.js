@@ -10,14 +10,20 @@ function reduce(array, callback, initialValue){
 
   //Detects if no initialValue
   if(arguments.length < 3){
-    resultSoFar = array[startingIndex]; //resultSoFar = array[0]
-    startingIndex++;
     //check array has one element just return that element
     if(Object.keys(array).length === 1){
-      var singleIndex = Object.keys(array)[0];
-      var singleElement = array[singleIndex];
-      return singleElement;
+      var onlyIndex = Object.keys(array)[0];
+      var onlyElement = array[onlyIndex];
+      return onlyElement;
     }
+
+    //while there are holes at the beginning, skip holes by incrementing startingIndex
+    while(startingIndex in array === false){
+      startingIndex++;
+    }
+    resultSoFar = array[startingIndex]; //resultSoFar = array[0]
+    startingIndex++;
+
   } /*has initialValue */ else{
     //check if array is empty
     if(Object.keys(array).length === 0){
@@ -26,8 +32,12 @@ function reduce(array, callback, initialValue){
   }
 
   for(var i=startingIndex; i<array.length; i++){
-    callback(resultSoFar, array[i], i);
+    if(i in array){
+      resultSoFar = callback(resultSoFar, array[i], i);
+    }
   }
+
+  return resultSoFar;
 }
 
 tests({
@@ -96,11 +106,23 @@ tests({
     eq(numberOfTimesCallbackHasRun, 0);
   },
 
-  'If should actually reduce.': function() {
-    fail();
+  'It should actually reduce.': function() {
+    var reduceResult = reduce([1,2,3], function(a, b){
+      return a+b;
+    }, 0);
+    eq(reduceResult, 6);
   },
-  'If should exclude holes.': function() {
-    fail();
+  'If initialValue, it should exclude holes.': function() {
+    var reduceResult = reduce([, 1, ,2,3, ], function(a, b){
+      return a+b;
+    }, 0);
+    eq(reduceResult, 6);
+  },
+  'If no initialValue, it should exclude holes too.': function() {
+    var reduceResult = reduce([, 1, ,2,3, ], function(a, b){
+      return a+b;
+    });
+    eq(reduceResult, 6);
   },
   'If array is empty, and no initialValue, throw TypeError.': function() {
     fail();
