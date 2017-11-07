@@ -1,6 +1,37 @@
 <script src="tinytest.js"></script>
 <script>
 
+/*
+  var originalArray = [1,2,3];
+
+  Case 1:
+  var doubleArray = originalArray.map(function(x){
+      return x * 2;
+  });
+  //doubleArray = [2,4,6];
+
+  Case 2:
+  var nativeMap = Array.prototype.map;
+  //Now nativeMap is a standalone function in which the value of this will not be the object but the window.
+  //And this standalone function is not present on originalArray or its prototype i.e. Array.prototype.
+  //Hence error when trying below.
+  var tripleArray = originalArray.nativeMap(function(x){
+    return x*3;
+  });
+  //originalArray.nativeMap is not a function
+
+  Case 3:
+  var nativeMap = Array.prototype.map;
+  //Again nativeMap is a standalone function in which the value inside callback is window.
+  var quadArray = nativeMap(originalArray, function(x){
+    return x * 4;
+  });
+  //will give an error that you are using nativeMap on undefined or null because the callback function needs an array to loop through
+  //in this case this !== originalArray but  this === window.
+  //Also the nativeMap definition doesnot accept the originalArray definition.
+
+*/
+
 Array.prototype.fakeMap = function(callback, optionalThisObject){
   var originalArray = this;
   var fakeMapCallback  = callback;
