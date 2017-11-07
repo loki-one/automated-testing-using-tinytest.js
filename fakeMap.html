@@ -1,25 +1,82 @@
 <script src="tinytest.js"></script>
 <script>
 
+Array.prototype.fakeMap = function(callback, optionalThisObject){
+  var originalArray = this;
+  var fakeMapCallback  = callback;
+
+  if(optionalThisObject){
+    fakeMapCallback = callback.bind(optionalThisObject);
+  }
+
+  var mappedArray = [];
+
+  for(i=0;i<originalArray.length;i++){
+    if(i in originalArray){
+      mappedArray[i] = fakeMapCallback(originalArray[i], i, originalArray);
+    }
+  }
+
+  return mappedArray;
+}
 
 tests({
   'It should run the callback function array.length times.': function(){
+    var myArray = [1,2,3];
+    var numberOfTimeCallbackRuns = 0;
+    myArray.fakeMap(function(){
+      numberOfTimeCallbackRuns++;
+    });
+    eq(numberOfTimeCallbackRuns, myArray.length);
   },
   'It should pass in the ith element as the first arguement to the callback.': function(){
+    var myArray = [1];
+    myArray.fakeMap(function(number){
+      eq(number, 1);
+    });
   },
   'It should pass in the ith position as the second arguement to the callback.': function(){
+    var myArray = [1];
+    myArray.fakeMap(function(number,index){
+      eq(index, 0);
+    });
   },
   'It should pass in the original array as the third arguement to the callback.': function(){
+    var myArray = [1];
+    myArray.fakeMap(function(number,index,originalArray){
+      eq(originalArray, myArray);
+    });
   },
   'It should accept an optional this object': function(){
+    var myArray = [];
+    myArray.fakeMap(function(number,index,originalArray){
+      eq(this.description, 'I should be accessible inside of the callback');
+    }, {description: 'I should be accessible inside of the callback'});
   },
   'It should return an array.': function(){
+    var myArray = [];
+    var fakeMappedArray = myArray.fakeMap(function(){});
+    eq(Array.isArray(fakeMappedArray), true);
   },
   'It should return a new array, not the original array.': function(){
+    var myArray = [];
+    var fakeMappedArray = myArray.fakeMap(function(){});
+    eq(fakeMappedArray !== myArray, true);
   },
   'It should return a mapped array.': function(){
+    var myArray = [1];
+    var fakeMappedArray = myArray.fakeMap(function(number){
+      return number * 4;
+    });
+    eq(fakeMappedArray[0], 4);
   },
   'It should skip unassigned indexes.': function(){
+    var wierdArray = [, 1];
+    var fakeMappedArray = wierdArray.fakeMap(function (number){
+      return number * 2;
+    });
+    eq(0 in fakeMappedArray, false);
+    eq(fakeMappedArray[1], 2);
   }
 });
 
