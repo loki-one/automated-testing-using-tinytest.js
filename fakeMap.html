@@ -36,14 +36,14 @@ Array.prototype.fakeMap = function(callback, optionalThisObject){
   var originalArray = this;
   var fakeMapCallback  = callback;
 
-  if(optionalThisObject){
+  if (optionalThisObject) {
     fakeMapCallback = callback.bind(optionalThisObject);
   }
 
   var mappedArray = [];
 
-  for(i=0;i<originalArray.length;i++){
-    if(i in originalArray){
+  for (var i = 0; i < originalArray.length; i++) {
+    if (i in originalArray) {
       mappedArray[i] = fakeMapCallback(originalArray[i], i, originalArray);
     }
   }
